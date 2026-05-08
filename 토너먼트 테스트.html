@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>스피드 큐브 챔피언십 - 초등 1부</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:100%; height:100%; font-family:'Noto Sans KR',sans-serif; -webkit-tap-highlight-color:transparent; }
+.page { display:none; }
+.page.active { display:flex; }
+
+/* ══════════════════════════════════════════
+   SETUP PAGE
+══════════════════════════════════════════ */
+#page-setup { flex-direction:column; min-height:100vh; background:#0a0b10; color:#d8dae8; position:relative; overflow-x:hidden; }
+#page-setup::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(-55deg,transparent,transparent 60px,rgba(201,168,76,0.018) 60px,rgba(201,168,76,0.018) 61px); pointer-events:none; z-index:0; }
+.setup-inner { position:relative; z-index:1; max-width:960px; margin:0 auto; padding:28px 16px 80px; width:100%; }
+.setup-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:36px; padding-bottom:16px; border-bottom:1px solid #1e2030; flex-wrap:wrap; gap:12px; }
+.s-logo-eye { font-size:0.6rem; letter-spacing:0.3em; text-transform:uppercase; color:#c9a84c; opacity:0.7; }
+.s-logo-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(1.8rem,4vw,2.6rem); letter-spacing:0.06em; line-height:1; color:#d8dae8; }
+.s-logo-title span { color:#c9a84c; }
+.s-badge { background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); padding:5px 12px; border-radius:2px; font-size:0.7rem; font-weight:700; letter-spacing:0.15em; color:#c9a84c; text-transform:uppercase; align-self:flex-start; }
+.s-section { margin-bottom:28px; }
+.s-section-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.s-num { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:#c9a84c; line-height:1; min-width:26px; }
+.s-title { font-size:0.72rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#8890b0; }
+.s-desc { font-size:0.7rem; color:#5a5e7a; margin-left:36px; margin-top:-8px; margin-bottom:12px; }
+.seed-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+@media(max-width:480px){ .seed-grid { grid-template-columns:repeat(2,1fr); } }
+.seed-slot { background:#14151f; border:1px solid #1e2030; border-radius:4px; padding:10px 12px; display:flex; flex-direction:column; gap:5px; transition:border-color 0.2s; }
+.seed-slot.filled { border-color:rgba(201,168,76,0.4); }
+.seed-label { display:flex; align-items:center; gap:7px; }
+.seed-badge { font-family:'Bebas Neue',sans-serif; font-size:0.95rem; color:#c9a84c; line-height:1; }
+.seed-tag { font-size:0.55rem; letter-spacing:0.12em; text-transform:uppercase; color:#5a5e7a; }
+.seed-input { background:transparent; border:none; border-bottom:1px solid #2a2d45; color:#d8dae8; font-family:'Noto Sans KR',sans-serif; font-size:0.85rem; font-weight:500; padding:3px 0; width:100%; outline:none; transition:border-color 0.2s; }
+.seed-input:focus { border-bottom-color:#c9a84c; }
+.seed-input::placeholder { color:#5a5e7a; font-size:0.72rem; }
+.pool-controls { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.input-row { display:flex; gap:8px; flex:1; min-width:200px; }
+.pool-input { flex:1; background:#14151f; border:1px solid #1e2030; border-radius:4px; padding:8px 12px; color:#d8dae8; font-family:'Noto Sans KR',sans-serif; font-size:0.82rem; outline:none; transition:border-color 0.2s; }
+.pool-input:focus { border-color:#c9a84c; }
+.pool-input::placeholder { color:#5a5e7a; }
+.btn { padding:8px 14px; border-radius:4px; border:none; cursor:pointer; font-family:'Noto Sans KR',sans-serif; font-size:0.75rem; font-weight:700; transition:all 0.14s; white-space:nowrap; }
+.btn-gold { background:#c9a84c; color:#0a0808; }
+.btn-gold:hover { background:#e8c96a; }
+.btn-ghost { background:transparent; border:1px solid #2a2d45; color:#8890b0; }
+.btn-ghost:hover { border-color:#c9a84c; color:#c9a84c; }
+.btn-danger { background:rgba(196,74,58,0.15); border:1px solid rgba(196,74,58,0.3); color:#c44a3a; }
+.pool-area { background:#14151f; border:1px solid #1e2030; border-radius:4px; padding:12px; min-height:70px; display:flex; flex-wrap:wrap; gap:7px; align-content:flex-start; }
+.pool-chip { display:flex; align-items:center; gap:6px; background:#0f1018; border:1px solid #2a2d45; border-radius:3px; padding:4px 9px; font-size:0.78rem; }
+@keyframes chipPop{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+.chip-x { cursor:pointer; color:#5a5e7a; font-size:0.9rem; transition:color 0.12s; }
+.chip-x:hover { color:#c44a3a; }
+.pool-empty { color:#5a5e7a; font-size:0.75rem; padding:6px 2px; font-style:italic; }
+.pool-counter { font-size:0.7rem; color:#5a5e7a; margin-top:6px; text-align:right; }
+.pool-counter span { color:#c9a84c; font-weight:700; }
+.bulk-textarea { width:100%; background:#14151f; border:1px solid #1e2030; border-radius:4px; padding:9px 12px; color:#d8dae8; font-family:'Noto Sans KR',sans-serif; font-size:0.8rem; resize:vertical; min-height:70px; outline:none; display:none; }
+.bulk-textarea.open { display:block; }
+.bulk-textarea:focus { border-color:#c9a84c; }
+.bulk-row { display:none; gap:8px; margin-top:8px; }
+.bulk-row.open { display:flex; }
+.summary-bar { background:#14151f; border:1px solid #1e2030; border-radius:4px; padding:14px 16px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:22px; }
+.summary-stat { display:flex; flex-direction:column; gap:1px; }
+.summary-num { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; line-height:1; color:#c9a84c; }
+.summary-num.ok { color:#3ac47a; } .summary-num.warn { color:#c44a3a; }
+.summary-label { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.1em; color:#5a5e7a; }
+.summary-divider { width:1px; height:32px; background:#1e2030; }
+.summary-msg { flex:1; font-size:0.75rem; color:#8890b0; min-width:160px; }
+.summary-msg strong { color:#c9a84c; }
+.generate-area { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.btn-generate { padding:12px 28px; font-size:0.88rem; letter-spacing:0.08em; border-radius:4px; border:none; cursor:pointer; font-family:'Noto Sans KR',sans-serif; font-weight:700; background:linear-gradient(135deg,#c9a84c,#e8a020); color:#08070a; transition:all 0.16s; }
+.btn-generate:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(201,168,76,0.35); }
+.btn-generate:disabled { opacity:0.35; cursor:not-allowed; }
+.generate-hint { font-size:0.7rem; color:#5a5e7a; }
+hr.divider { border:none; border-top:1px solid #1e2030; margin:24px 0; }
+.share-box { background:#14151f; border:1px solid #1e2030; border-radius:4px; padding:14px 16px; margin-top:16px; display:none; }
+.share-box.open { display:block; }
+.share-box p { font-size:0.75rem; color:#8890b0; margin-bottom:8px; }
+.share-box strong { color:#c9a84c; }
+.share-url-row { display:flex; gap:8px; }
+.share-url { flex:1; background:#0f1018; border:1px solid #2a2d45; border-radius:4px; padding:7px 10px; color:#d8dae8; font-size:0.72rem; font-family:monospace; outline:none; }
+.btn-copy { background:#c9a84c; color:#0a0808; border:none; border-radius:4px; padding:7px 12px; font-size:0.73rem; font-weight:700; cursor:pointer; white-space:nowrap; }
+
+/* ══════════════════════════════════════════
+   BRACKET PAGE
+══════════════════════════════════════════ */
+#page-bracket { flex-direction:column; width:100vw; height:100vh; overflow:hidden; background:#fff; }
+
+/* Header */
+#b-hdr {
+  width:100%; flex-shrink:0;
+  background:#111318;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px;
+  height:50px;
+}
+@media(max-width:600px){ #b-hdr { height:44px; padding:0 10px; } }
+.b-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(0.8rem,1.4vw,1.3rem); letter-spacing:0.06em; color:#fff; white-space:nowrap; }
+.b-title em { color:#e8b84b; font-style:normal; }
+.b-hdr-r { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+/* Hide some buttons on mobile */
+@media(max-width:600px){
+  .b-hdr-r .hbtn:not(.gold):not(#btn-qr) { display:none; }
+  .view-toggle { display:none; }
+}
+.hbtn { padding:4px 10px; border-radius:3px; border:1px solid rgba(255,255,255,0.22); background:transparent; color:#aaa; font-family:'Noto Sans KR',sans-serif; font-size:clamp(9px,0.82vw,11px); font-weight:700; cursor:pointer; white-space:nowrap; transition:all 0.13s; }
+.hbtn:hover { border-color:#e8b84b; color:#e8b84b; }
+.hbtn.gold { background:#e8b84b; color:#111; border-color:#e8b84b; }
+.hbtn.gold:hover { background:#f5ca60; }
+.live-badge { display:flex; align-items:center; gap:4px; font-size:8px; font-weight:700; letter-spacing:0.16em; color:#e8b84b; border:1px solid rgba(232,184,75,0.45); padding:3px 7px; border-radius:2px; background:rgba(232,184,75,0.08); white-space:nowrap; }
+.live-dot { width:5px; height:5px; border-radius:50%; background:#e8b84b; animation:blink 1.3s infinite; }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
+.view-toggle { display:flex; border:1px solid #444; border-radius:3px; overflow:hidden; }
+.vtbtn { padding:4px 9px; background:#1a1c24; color:#888; border:none; cursor:pointer; font-size:10px; font-weight:700; font-family:'Noto Sans KR',sans-serif; transition:all 0.12s; }
+.vtbtn.on { background:#e8b84b; color:#111; }
+
+/* Progress bar */
+#b-pbar-wrap { width:100%; height:3px; background:#ccc; flex-shrink:0; }
+#b-pbar { height:100%; background:linear-gradient(90deg,#c9902c,#e8b84b); transition:width 0.4s ease; }
+
+/* Round tabs */
+#round-tabs {
+  width:100%; flex-shrink:0;
+  background:#1a1c24;
+  display:flex; align-items:stretch;
+  border-bottom:2.5px solid #000;
+  height:40px;
+}
+@media(max-width:600px){ #round-tabs { height:36px; } }
+.rtab {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(11px,1.3vw,17px); letter-spacing:0.1em;
+  color:#777; cursor:pointer;
+  border-right:1px solid #333;
+  transition:all 0.13s; user-select:none;
+}
+.rtab:last-child { border-right:none; }
+.rtab:hover { color:#e8b84b; background:#22242e; }
+.rtab.active { color:#111; background:#e8b84b; }
+.rtab .done-mark { font-size:8px; margin-left:4px; font-family:'Noto Sans KR',sans-serif; }
+
+/* ══════════════════════════════════════════
+   ROUND FOCUS VIEW
+══════════════════════════════════════════ */
+#round-view { flex:1; min-height:0; display:flex; flex-direction:column; background:#e8e8e8; overflow:hidden; }
+.round-stage { flex:1; min-height:0; display:none !important; overflow:hidden; }
+/* Each stage sets its own display type when active */
+.round-stage.active { display:grid !important; }
+.stage-f.active { display:flex !important; }
+
+/* ─ STAGE LAYOUTS ─ */
+/* 32강: 2 cols × 4 rows of match cards, each card is BIG */
+.stage-32 {
+  padding:clamp(8px,1vw,14px);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(4,1fr);
+  gap:clamp(5px,0.8vw,10px);
+  background:#e8e8e8;
+}
+/* 16강: 2 cols × 4 rows */
+.stage-16 {
+  padding:clamp(8px,1vw,16px);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:repeat(4,1fr);
+  gap:clamp(6px,1vw,12px);
+  background:#e8e8e8;
+}
+/* 8강: 2 cols × 2 rows — big cards */
+.stage-8 {
+  padding:clamp(10px,1.2vw,20px);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:clamp(8px,1.2vw,16px);
+  background:#e8e8e8;
+}
+/* 준결승: 2 cols side by side — mirrored, LEFT vs RIGHT */
+.stage-4 {
+  padding:clamp(12px,2vw,32px);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr;
+  gap:clamp(12px,2vw,32px);
+  background:#e8e8e8;
+}
+/* 결승: single centered card */
+.stage-f {
+  padding:clamp(16px,3vw,48px);
+  display:flex;
+  align-items:center; justify-content:center;
+  background:#e8e8e8;
+}
+
+/* Per-round font sizing via CSS vars */
+.stage-32 { --nm:clamp(15px,1.9vw,26px); --pl:clamp(20px,2.2vw,30px); --pf:clamp(9px,1vw,13px); --hf:clamp(9px,0.9vw,12px); --tk:clamp(12px,1.3vw,18px); }
+.stage-16 { --nm:clamp(16px,2vw,28px); --pl:clamp(22px,2.6vw,34px); --pf:clamp(9px,1vw,13px); --hf:clamp(10px,1vw,14px); --tk:clamp(13px,1.4vw,18px); }
+.stage-8  { --nm:clamp(20px,2.8vw,38px); --pl:clamp(28px,3.2vw,44px); --pf:clamp(11px,1.2vw,16px); --hf:clamp(11px,1.2vw,16px); --tk:clamp(15px,1.8vw,24px); }
+.stage-4  { --nm:clamp(22px,3vw,42px); --pl:clamp(32px,3.8vw,52px); --pf:clamp(13px,1.4vw,18px); --hf:clamp(12px,1.3vw,17px); --tk:clamp(18px,2vw,26px); }
+.stage-f  { --nm:clamp(28px,4vw,56px); --pl:clamp(40px,5vw,64px); --pf:clamp(16px,1.8vw,22px); --hf:clamp(14px,1.5vw,20px); --tk:clamp(22px,2.5vw,32px); }
+
+/* Focus match card */
+.fmc {
+  background:#fff;
+  border:2.5px solid #111;
+  border-radius:7px;
+  overflow:hidden;
+  display:flex; flex-direction:column;
+  box-shadow:0 2px 6px rgba(0,0,0,0.14);
+  transition:border-color 0.14s, box-shadow 0.14s;
+  min-height:0; min-width:0;
+}
+/* 결승 card wider */
+.stage-f .fmc { width:min(520px,96%); }
+
+.fmc.playable { border-color:#c8900a; box-shadow:0 3px 14px rgba(200,144,10,0.28); cursor:pointer; }
+.fmc.playable:hover { border-color:#e8b030; box-shadow:0 5px 20px rgba(232,176,48,0.42); }
+.fmc.done { border-color:#1a6030; }
+.fmc.waiting { border-color:#999; opacity:0.5; }
+.fmc.final-fmc { border:3px solid #c8900a; box-shadow:0 0 24px rgba(200,144,10,0.38); }
+
+.fmc-hdr {
+  background:#111; padding:0 8px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0;
+  height:clamp(20px,2.6vh,32px);
+}
+.fmc.done .fmc-hdr { background:#1a4028; }
+.fmc.final-fmc .fmc-hdr { background:#7a4800; }
+.fmc-id { font-family:'Bebas Neue',sans-serif; font-size:var(--hf,12px); letter-spacing:0.1em; color:#e8b84b; white-space:nowrap; overflow:hidden; }
+.fmc-sdot { width:7px; height:7px; border-radius:50%; background:#555; flex-shrink:0; }
+.fmc-sdot.live { background:#e8b84b; animation:blink 1.3s infinite; }
+.fmc-sdot.done { background:#2e8a50; }
+
+/* Focus slot */
+.fsl {
+  flex:1; min-height:0;
+  display:flex; align-items:center;
+  gap:clamp(5px,0.7vw,10px);
+  padding:0 clamp(7px,0.9vw,13px);
+  border-bottom:2px solid #111;
+  overflow:hidden;
+  transition:background 0.1s;
+}
+.fsl:last-child { border-bottom:none; }
+.fsl.fclick { cursor:pointer; }
+.fsl.fclick:hover { background:#fdf5e0; }
+.fsl.fwin { background:#e4f6ec; }
+.fsl.flose { opacity:0.3; background:#f8f8f8; }
+.fsl.fempty { background:#f4f4f6; }
+
+.fpill {
+  flex-shrink:0;
+  width:var(--pl,26px); height:var(--pl,26px); min-width:var(--pl,26px);
+  border-radius:50%;
+  background:#333; color:#fff;
+  font-size:var(--pf,10px); font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+.fsl.fwin .fpill { background:#1a6030; }
+.fsl.fwin.fseeded .fpill { background:#9a6200; }
+.fsl.fempty .fpill { background:#bbb; }
+
+.fname {
+  flex:1; font-weight:700; color:#111;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  font-size:var(--nm,15px);
+}
+.fsl.fwin .fname { color:#1a5028; }
+.fsl.fwin.fseeded .fname { color:#7a4800; }
+.fsl.flose .fname { color:#999; font-weight:400; }
+.fsl.fempty .fname { color:#aaa; font-style:italic; font-weight:400; font-size:calc(var(--nm,15px) * 0.85); }
+.ftick { color:#1a6030; flex-shrink:0; font-weight:700; font-size:var(--tk,13px); }
+
+/* Next match banner */
+.nmb {
+  background:linear-gradient(135deg,#1a4028,#1e5232);
+  color:#fff; border-radius:0 0 5px 5px;
+  padding:2px clamp(6px,0.8vw,12px);
+  text-align:center;
+  font-size:clamp(9px,0.85vw,13px); font-weight:700;
+  border-top:1.5px solid #2e8a50;
+  animation:nmbIn 0.25s ease;
+  flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  line-height:1.4;
+}
+@keyframes nmbIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.nmb .nmb-vs { color:#e8b84b; }
+.nmb .nmb-lbl { font-size:clamp(7px,0.65vw,9px); opacity:0.7; font-weight:400; display:block; }
+
+/* ── 준결승 특별: 좌/우 대칭 레이아웃 ── */
+/* 왼쪽 카드는 정방향, 오른쪽 카드는 좌우 반전 느낌을 주기위해
+   오른쪽 카드의 pill과 이름 순서를 반전 */
+.stage-4 .fmc-wrap:last-child .fsl {
+  flex-direction:row-reverse;
+  text-align:right;
+}
+.stage-4 .fmc-wrap:last-child .fname { text-align:right; }
+
+
+/* 32강: 카드 헤더 숨기고 슬롯에 공간 최대화 */
+.stage-32 .fmc-hdr { height:0; overflow:hidden; padding:0; border:none; }
+.stage-32 .fmc-sdot { display:none; }
+/* 32강 슬롯 padding 여유롭게 */
+.stage-32 .fsl { padding:0 clamp(8px,1vw,14px); }
+/* 32강 경기번호 대신 슬롯 상단 선으로 구분 */
+.stage-32 .fsl:first-child { border-bottom:2px solid #111; }
+
+/* fmc-wrap = card + banner container */
+.fmc-wrap {
+  display:flex; flex-direction:column;
+  min-height:0; min-width:0;
+  height:100%;
+}
+.stage-f .fmc-wrap { width:min(520px,96%); height:auto; align-self:center; }
+
+/* fmc inside wrap fills available height */
+.fmc-wrap .fmc { flex:1; min-height:0; }
+
+/* ══════════════════════════════════════════
+   FULL BRACKET VIEW
+══════════════════════════════════════════ */
+#full-view {
+  flex:1; min-height:0; display:none;
+  grid-template-columns:repeat(4,1fr) 26px auto 26px repeat(4,1fr);
+  grid-template-rows:auto 1fr;
+  background:#f5f5f5; position:relative; overflow:hidden;
+}
+#full-view.active { display:grid; }
+.b-rlbl { font-size:clamp(7px,0.62vw,9px); font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#333; text-align:center; padding:5px 2px 4px; border-bottom:2px solid #111; background:#e0e0e0; white-space:nowrap; overflow:hidden; }
+.b-rlbl.gold { color:#7a4800; border-bottom-color:#c8900a; background:#f5ede0; }
+.b-rlbl.spacer { border-bottom-color:transparent; background:#f5f5f5; }
+.b-col { display:flex; flex-direction:column; justify-content:space-around; padding:5px 3px; position:relative; overflow:visible; min-width:0; }
+.b-conn { position:relative; overflow:visible; }
+.b-col-final { display:flex; flex-direction:column; justify-content:center; align-items:center; padding:7px 3px; position:relative; min-width:130px; max-width:180px; }
+.b-trophy-lbl { font-family:'Bebas Neue',sans-serif; font-size:clamp(8px,0.85vw,12px); letter-spacing:0.2em; color:#7a4800; text-align:center; margin-bottom:4px; }
+.mc { background:#fff; border:2px solid #111; border-radius:5px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.12); transition:border-color 0.14s,box-shadow 0.14s; width:100%; }
+.mc.playable { border-color:#c8900a; box-shadow:0 1px 8px rgba(200,144,10,0.28); cursor:pointer; }
+.mc.playable:hover { border-color:#e8b030; box-shadow:0 2px 12px rgba(232,176,48,0.4); }
+.mc.done { border-color:#1a6030; }
+.mc.final-mc { border:2.5px solid #c8900a; box-shadow:0 0 18px rgba(200,144,10,0.32); }
+.mc-hdr { background:#222; border-bottom:2px solid #111; padding:2px 6px; display:flex; align-items:center; justify-content:space-between; height:17px; flex-shrink:0; }
+.mc-id { font-size:clamp(6px,0.55vw,8px); letter-spacing:0.08em; text-transform:uppercase; color:#e8b84b; font-weight:700; white-space:nowrap; overflow:hidden; }
+.sdot { width:5px; height:5px; border-radius:50%; background:#555; flex-shrink:0; }
+.sdot.live { background:#e8b84b; animation:blink 1.3s infinite; }
+.sdot.done { background:#2e8a50; }
+.sl { display:flex; align-items:center; gap:5px; padding:3px 5px; min-height:24px; border-bottom:1px solid #111; transition:background 0.1s; overflow:hidden; }
+.sl:last-child { border-bottom:none; }
+.sl.win { background:#e4f6ec; }
+.sl.lose { opacity:0.32; }
+.pill { min-width:16px; height:14px; border-radius:7px; background:#333; color:#fff; font-size:clamp(6px,0.48vw,7px); font-weight:700; display:flex; align-items:center; justify-content:center; padding:0 2px; flex-shrink:0; }
+.sl.win .pill { background:#1a6030; }
+.sl.win.seeded .pill { background:#9a6200; }
+.pname { font-size:clamp(8px,0.72vw,11px); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#111; font-weight:500; }
+.sl.win .pname { color:#1a5028; font-weight:700; }
+.sl.lose .pname { color:#999; }
+.sl.empty .pname { color:#bbb; font-style:italic; }
+.wtick { font-size:8px; color:#1a6030; flex-shrink:0; font-weight:700; }
+
+/* ══════════════════════════════════════════
+   CONFIRM MODAL
+══════════════════════════════════════════ */
+#confirm-modal { position:fixed; inset:0; z-index:80; background:rgba(0,0,0,0.55); display:none; align-items:center; justify-content:center; padding:16px; }
+#confirm-modal.open { display:flex; }
+.cm-box { background:#fff; border-radius:10px; padding:24px 28px; text-align:center; box-shadow:0 8px 40px rgba(0,0,0,0.28); border:2px solid #111; width:100%; max-width:380px; }
+@keyframes popIn{from{opacity:0;transform:scale(0.88)}to{opacity:1;transform:scale(1)}}
+.cm-box { animation:popIn 0.16s cubic-bezier(0.175,0.885,0.32,1.275); }
+.cm-label { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#999; margin-bottom:6px; }
+.cm-match { font-size:14px; color:#111; margin-bottom:18px; font-weight:700; }
+.cm-players { display:flex; gap:10px; margin-bottom:8px; }
+.cm-btn { flex:1; padding:14px 6px; border-radius:6px; border:2px solid #111; background:#f8f9fc; font-family:'Noto Sans KR',sans-serif; font-size:15px; font-weight:700; cursor:pointer; color:#111; transition:all 0.13s; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cm-btn:hover, .cm-btn:active { border-color:#c8900a; background:#fdf5e0; color:#8a5000; transform:translateY(-2px); }
+.cm-cancel { margin-top:4px; font-size:11px; color:#bbb; cursor:pointer; padding:4px; }
+.cm-cancel:hover { color:#666; }
+
+/* ══════════════════════════════════════════
+   QR MODAL
+══════════════════════════════════════════ */
+#qr-modal { position:fixed; inset:0; z-index:90; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; padding:16px; }
+#qr-modal.open { display:flex; }
+.qr-box { background:#fff; border-radius:12px; padding:24px 28px; text-align:center; box-shadow:0 8px 40px rgba(0,0,0,0.28); border:2px solid #111; width:100%; max-width:340px; animation:popIn 0.16s cubic-bezier(0.175,0.885,0.32,1.275); }
+.qr-title { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:0.1em; color:#111; margin-bottom:3px; }
+.qr-sub { font-size:10px; color:#888; margin-bottom:14px; }
+#qr-canvas { display:block; margin:0 auto 12px; border:1px solid #ddd; border-radius:4px; }
+.qr-share-tabs { display:flex; border:1px solid #ddd; border-radius:4px; overflow:hidden; margin-bottom:10px; }
+.qr-tab { flex:1; padding:6px 4px; border:none; background:#f4f4f4; color:#666; font-size:10px; font-weight:700; cursor:pointer; font-family:'Noto Sans KR',sans-serif; transition:all 0.12s; }
+.qr-tab.active { background:#111; color:#e8b84b; }
+.qr-panel { text-align:left; }
+.qr-url { font-size:9px; color:#666; word-break:break-all; background:#f4f4f4; padding:6px 8px; border-radius:4px; font-family:monospace; margin-bottom:6px; }
+.qr-note { font-size:9.5px; color:#666; line-height:1.6; }
+.qr-note strong { color:#333; }
+.qr-note code { background:#f0f0f0; padding:1px 4px; border-radius:2px; font-size:9px; }
+.qr-code-box { background:#f4f4f4; border:1px solid #ddd; border-radius:4px; padding:7px; font-size:8px; font-family:monospace; word-break:break-all; max-height:70px; overflow:auto; text-align:left; color:#333; cursor:text; user-select:all; margin-bottom:6px; }
+.qr-copy-btn { padding:5px 14px; background:#c9a84c; color:#111; border:none; border-radius:4px; font-size:10px; font-weight:700; cursor:pointer; font-family:'Noto Sans KR',sans-serif; }
+.qr-close { margin-top:12px; padding:7px 24px; background:#111; color:#e8b84b; border:none; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Noto Sans KR',sans-serif; }
+
+/* ══════════════════════════════════════════
+   CHAMPION + TOAST + CONFETTI
+══════════════════════════════════════════ */
+.champ-ov { position:fixed; inset:0; z-index:100; background:rgba(255,255,255,0.92); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; padding:16px; }
+@keyframes faIn{from{opacity:0}to{opacity:1}}
+.champ-ov { animation:faIn 0.3s ease; }
+.champ-box { background:#fff; border:3px solid #111; border-radius:12px; padding:clamp(28px,4vw,52px) clamp(24px,5vw,72px); text-align:center; box-shadow:0 8px 50px rgba(0,0,0,0.18); animation:popIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275); max-width:500px; width:100%; }
+.champ-eyebrow { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:#999; margin-bottom:8px; }
+.champ-big { font-size:clamp(2rem,5vw,3.5rem); margin-bottom:8px; }
+.champ-name { font-family:'Bebas Neue',sans-serif; font-size:clamp(2rem,5vw,3.2rem); letter-spacing:0.08em; background:linear-gradient(135deg,#c9902c,#e8b84b,#f5ca60); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; margin-bottom:4px; }
+.champ-sub { font-size:11px; color:#aaa; margin-bottom:18px; }
+.champ-btn { padding:8px 28px; background:#111; border:none; border-radius:4px; font-family:'Noto Sans KR',sans-serif; font-size:12px; font-weight:700; color:#e8b84b; cursor:pointer; }
+.toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:#111; color:#e8b84b; border:2px solid #e8b84b; padding:7px 18px; border-radius:4px; font-size:12px; font-weight:700; z-index:200; white-space:nowrap; animation:tUp 0.16s ease; box-shadow:0 3px 14px rgba(0,0,0,0.2); }
+@keyframes tUp{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}
+.cf { position:fixed; border-radius:2px; pointer-events:none; z-index:300; animation:cfF linear forwards; }
+@keyframes cfF{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* ══════════════════════════════════════════
+   VIEWER MODE
+══════════════════════════════════════════ */
+body.viewer-mode .hbtn:not(.gold):not(#btn-qr) { display:none; }
+body.viewer-mode .view-toggle { display:none; }
+body.viewer-mode .fmc.playable { cursor:default; border-color:#111; box-shadow:0 2px 6px rgba(0,0,0,0.14); }
+body.viewer-mode .fmc.playable:hover { border-color:#111; box-shadow:0 2px 6px rgba(0,0,0,0.14); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ SETUP PAGE ══════════════════════════ -->
+<div id="page-setup" class="page active">
+<div class="setup-inner">
+  <header class="setup-header">
+    <div>
+      <div class="s-logo-eye">Tournament Manager</div>
+      <h1 class="s-logo-title">32강 <span>대진표</span> 설정</h1>
+    </div>
+    <div class="s-badge">ADMIN</div>
+  </header>
+
+  <div class="s-section">
+    <div class="s-section-head"><div class="s-num">01</div><div class="s-title">시드 배정 선수 <span style="color:#c9a84c">(8명)</span></div></div>
+    <p class="s-desc">8강에서 S1↔S8, S4↔S5, S2↔S7, S3↔S6이 만나도록 배치됩니다.</p>
+    <div class="seed-grid" id="seedGrid"></div>
+  </div>
+  <hr class="divider">
+  <div class="s-section">
+    <div class="s-section-head"><div class="s-num">02</div><div class="s-title">랜덤 배정 선수 <span style="color:#c9a84c">(최대 24명)</span></div></div>
+    <p class="s-desc">무작위로 나머지 자리에 배치됩니다.</p>
+    <div class="pool-controls">
+      <div class="input-row">
+        <input class="pool-input" id="poolInput" type="text" placeholder="선수 이름 입력..." maxlength="20"/>
+        <button class="btn btn-gold" onclick="addPoolPlayer()">추가</button>
+      </div>
+      <button class="btn btn-ghost" onclick="toggleBulk()">일괄 입력</button>
+      <button class="btn btn-ghost" onclick="addSamples()">샘플</button>
+      <button class="btn btn-danger" onclick="clearPool()">삭제</button>
+    </div>
+    <textarea class="bulk-textarea" id="bulkArea" placeholder="쉼표 또는 줄바꿈으로 구분"></textarea>
+    <div class="bulk-row" id="bulkRow">
+      <button class="btn btn-gold" onclick="importBulk()">일괄 추가</button>
+      <button class="btn btn-ghost" onclick="toggleBulk()">닫기</button>
+    </div>
+    <div style="height:10px"></div>
+    <div class="pool-area" id="poolArea"><span class="pool-empty">선수를 추가하세요.</span></div>
+    <div class="pool-counter" id="poolCounter"></div>
+  </div>
+  <hr class="divider">
+  <div class="summary-bar">
+    <div class="summary-stat"><div class="summary-num" id="sumSeeded">0</div><div class="summary-label">시드</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat"><div class="summary-num" id="sumPool">0</div><div class="summary-label">랜덤</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat"><div class="summary-num" id="sumTotal">0</div><div class="summary-label">전체/32</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat"><div class="summary-num" id="sumByes">0</div><div class="summary-label">부전승</div></div>
+    <div class="summary-msg" id="summaryMsg">선수를 등록하면 상태가 표시됩니다.</div>
+  </div>
+  <div class="generate-area">
+    <button class="btn-generate" id="generateBtn" onclick="generateBracket()" disabled>🏆 대진표 생성</button>
+    <span class="generate-hint" id="generateHint">시드 최소 1명, 랜덤 최소 1명 필요</span>
+  </div>
+  <div class="share-box" id="shareBox">
+    <p>아래 URL을 공유하세요. <strong>같은 HTML 파일</strong>이 있는 기기에서 열 수 있습니다.</p>
+    <div class="share-url-row">
+      <input class="share-url" id="shareUrl" type="text" readonly/>
+      <button class="btn-copy" onclick="copyShareUrl()">복사</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════ BRACKET PAGE ══════════════════════════ -->
+<div id="page-bracket" class="page">
+  <div id="b-hdr">
+    <div class="b-title">스피드 큐브 챔피언십 &nbsp;|&nbsp; <em>초등 1부 토너먼트</em></div>
+    <div class="b-hdr-r">
+      <span id="b-prog-text" style="font-size:clamp(8px,0.8vw,11px);color:#888;white-space:nowrap;"></span>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+      <div class="view-toggle">
+        <button class="vtbtn on" id="vt-focus" onclick="setView('focus')">라운드</button>
+        <button class="vtbtn" id="vt-full" onclick="setView('full')">전체</button>
+      </div>
+      <button class="hbtn" onclick="resetResults()">초기화</button>
+      <button class="hbtn" id="btn-qr" onclick="openQR()">📱 공유</button>
+      <button class="hbtn gold" onclick="showPage('setup')">← 명단</button>
+    </div>
+  </div>
+  <div id="b-pbar-wrap"><div id="b-pbar" style="width:0%"></div></div>
+
+  <div id="round-tabs">
+    <div class="rtab active" id="rtab-0" onclick="switchRound(0)">32강</div>
+    <div class="rtab" id="rtab-1" onclick="switchRound(1)">16강</div>
+    <div class="rtab" id="rtab-2" onclick="switchRound(2)">8강</div>
+    <div class="rtab" id="rtab-3" onclick="switchRound(3)">준결승</div>
+    <div class="rtab" id="rtab-4" onclick="switchRound(4)">결승</div>
+  </div>
+
+  <div id="round-view">
+    <div class="round-stage stage-32 active" id="stage-0"></div>
+    <div class="round-stage stage-16" id="stage-1"></div>
+    <div class="round-stage stage-8"  id="stage-2"></div>
+    <div class="round-stage stage-4"  id="stage-3"></div>
+    <div class="round-stage stage-f"  id="stage-4"></div>
+  </div>
+  <div id="full-view"></div>
+</div>
+
+<!-- MODALS -->
+<div id="qr-modal">
+  <div class="qr-box">
+    <div class="qr-title">📱 대진표 공유</div>
+    <div class="qr-sub">QR 스캔 또는 코드 복사로 공유하세요</div>
+    <canvas id="qr-canvas" width="180" height="180"></canvas>
+    <div class="qr-share-tabs">
+      <button class="qr-tab active" id="qtab-hash" onclick="switchQRTab('hash')">QR / 해시코드</button>
+      <button class="qr-tab" id="qtab-guide" onclick="switchQRTab('guide')">드라이브 공유</button>
+    </div>
+    <div class="qr-panel" id="qpanel-hash">
+      <div class="qr-url" id="qr-url-text"></div>
+      <div class="qr-code-box" id="qr-code-box"></div>
+      <button class="qr-copy-btn" onclick="copyShareCode()">📋 코드 복사</button>
+    </div>
+    <div class="qr-panel" id="qpanel-guide" style="display:none">
+      <p class="qr-note">
+        <strong>구글 드라이브로 공유하면 QR만으로 접속 가능합니다</strong><br><br>
+        ① 이 HTML 파일을 구글 드라이브에 업로드<br>
+        ② 파일 우클릭 → 공유 → "링크 아는 모든 사람"<br>
+        ③ 공유 링크 끝에 <code>#해시코드</code> 붙이기<br>
+        ④ 그 URL로 QR 생성<br><br>
+        그러면 스마트폰으로 스캔만 해도 대진표를 볼 수 있습니다.
+      </p>
+    </div>
+    <button class="qr-close" onclick="closeQR()">닫기</button>
+  </div>
+</div>
+
+<div id="confirm-modal">
+  <div class="cm-box">
+    <div class="cm-label">승자를 선택하세요</div>
+    <div class="cm-match" id="cm-match-label"></div>
+    <div class="cm-players">
+      <button class="cm-btn" id="cm-btn1" onclick="confirmWinner(0)"></button>
+      <button class="cm-btn" id="cm-btn2" onclick="confirmWinner(1)"></button>
+    </div>
+    <div class="cm-cancel" onclick="closeModal()">취소</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+const SEED_COUNT=8, POOL_MAX=24;
+let seeded=Array(SEED_COUNT).fill(''), pool=[];
+let gSlots=[], gSeeded=[];
+let matchMap={}, matchOrder=[];
+let bResults={};
+let currentView='focus', currentRound=0;
+let svgOverlay=null;
+const IS_VIEWER=/[?&]view=1/.test(location.search);
+
+// ══════════════════════════════════════
+// PAGE & VIEW
+// ══════════════════════════════════════
+function showPage(name){
+  removeSvgOverlay();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(name==='bracket'){ buildMatches(); renderAll(); }
+}
+
+function setView(v){
+  currentView=v;
+  document.getElementById('round-view').style.display=v==='focus'?'flex':'none';
+  document.getElementById('full-view').classList.toggle('active',v==='full');
+  document.getElementById('round-tabs').style.display=v==='focus'?'flex':'none';
+  document.getElementById('vt-focus').classList.toggle('on',v==='focus');
+  document.getElementById('vt-full').classList.toggle('on',v==='full');
+  if(v==='full'){renderFullView();}else{removeSvgOverlay();}
+}
+
+function switchRound(r){
+  currentRound=r;
+  for(let i=0;i<=4;i++){
+    const t=document.getElementById('rtab-'+i);
+    if(t) t.classList.toggle('active',i===r);
+    const s=document.getElementById('stage-'+i);
+    if(s) s.classList.toggle('active',i===r);
+  }
+}
+
+// ══════════════════════════════════════
+// SETUP LOGIC
+// ══════════════════════════════════════
+function initSeedGrid(){
+  const g=document.getElementById('seedGrid'); g.innerHTML='';
+  for(let i=0;i<SEED_COUNT;i++){
+    const s=document.createElement('div');
+    s.className='seed-slot'; s.id='seed-slot-'+i;
+    s.innerHTML=`<div class="seed-label"><div class="seed-badge">S${i+1}</div><div class="seed-tag">시드 ${i+1}</div></div>
+      <input class="seed-input" id="seed-${i}" type="text" placeholder="이름..." maxlength="20"
+        oninput="updateSeed(${i},this.value)"
+        onkeydown="if(event.key==='Enter')document.getElementById('seed-${Math.min(i+1,7)}').focus()"/>`;
+    g.appendChild(s);
+  }
+}
+
+function updateSeed(i,val){
+  seeded[i]=val.trim();
+  document.getElementById('seed-slot-'+i).classList.toggle('filled',!!seeded[i]);
+  updateSummary();
+}
+
+document.getElementById('poolInput').addEventListener('keydown',e=>{if(e.key==='Enter')addPoolPlayer();});
+
+function addPoolPlayer(){
+  const inp=document.getElementById('poolInput'), name=inp.value.trim();
+  if(!name) return;
+  if(pool.includes(name)||seeded.includes(name)){showToast('이미 등록된 이름입니다.');return;}
+  if(pool.length>=POOL_MAX){showToast('최대 24명입니다.');return;}
+  pool.push(name); inp.value=''; renderPool(); updateSummary();
+}
+function removePoolPlayer(name){pool=pool.filter(p=>p!==name);renderPool();updateSummary();}
+function clearPool(){pool=[];renderPool();updateSummary();}
+
+function renderPool(){
+  const area=document.getElementById('poolArea'),ctr=document.getElementById('poolCounter');
+  if(!pool.length){area.innerHTML='<span class="pool-empty">선수를 추가하세요.</span>';ctr.innerHTML='';return;}
+  area.innerHTML=pool.map(p=>`<div class="pool-chip" style="animation:chipPop 0.18s ease"><span>${p}</span><span class="chip-x" onclick="removePoolPlayer('${p}')">×</span></div>`).join('');
+  ctr.innerHTML=`<span>${pool.length}</span>/${POOL_MAX}명`;
+}
+
+function toggleBulk(){
+  document.getElementById('bulkArea').classList.toggle('open');
+  document.getElementById('bulkRow').classList.toggle('open');
+}
+
+function importBulk(){
+  const names=document.getElementById('bulkArea').value.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
+  let added=0;
+  names.forEach(name=>{if(pool.includes(name)||seeded.includes(name)||pool.length>=POOL_MAX)return;pool.push(name);added++;});
+  document.getElementById('bulkArea').value='';
+  renderPool();updateSummary();showToast(added+'명 추가됨');
+}
+
+const SAMPLES=['강민호','김동현','김보름','김선욱','김연아','노진호','류민수','문성준','박세리','박재원','서정민','손흥민','오승환','유리나','이강인','이민혁','이재훈','임채연','장하은','정다은','정현우','조수빈','최현아','한지수'];
+function addSamples(){SAMPLES.forEach(n=>{if(!pool.includes(n)&&!seeded.includes(n)&&pool.length<POOL_MAX)pool.push(n);});renderPool();updateSummary();}
+
+function updateSummary(){
+  const fs=seeded.filter(Boolean).length,pc=pool.length,total=fs+pc,byes=Math.max(0,32-total);
+  document.getElementById('sumSeeded').textContent=fs;
+  document.getElementById('sumPool').textContent=pc;
+  document.getElementById('sumTotal').textContent=total;
+  document.getElementById('sumByes').textContent=byes;
+  document.getElementById('sumTotal').className='summary-num'+(total===32?' ok':total>32?' warn':'');
+  document.getElementById('sumByes').className='summary-num'+(byes>0?' warn':' ok');
+  const canGo=fs>=1&&pc>=1&&total<=32;
+  document.getElementById('generateBtn').disabled=!canGo;
+  const msg=document.getElementById('summaryMsg'),hint=document.getElementById('generateHint');
+  if(total>32){msg.innerHTML='<strong style="color:#c44a3a">초과!</strong> 32명을 넘었습니다.';hint.textContent='총 32명 초과 불가';}
+  else if(total===32){msg.innerHTML='<strong>32명 완성!</strong>';hint.textContent='대진표 생성 준비 완료';}
+  else if(canGo){msg.innerHTML=`${byes}개 슬롯 <strong>부전승</strong> 처리`;hint.textContent='부전승 포함 대진표';}
+  else{msg.innerHTML='시드·랜덤 선수 각 최소 1명 필요';hint.textContent='시드 최소 1명, 랜덤 최소 1명 필요';}
+}
+
+// Seed placement: S1(0) S8(7) | S4(8) S5(15) | S2(16) S7(23) | S3(24) S6(31)
+function buildSlots(fs,shuffled){
+  const slots=Array(32).fill(null);
+  const seedToSlot={0:0,7:7,3:8,4:15,1:16,6:23,2:24,5:31};
+  fs.forEach((name,i)=>{if(seedToSlot[i]!==undefined)slots[seedToSlot[i]]=name;});
+  let pi=0;
+  for(let i=0;i<32&&pi<shuffled.length;i++){if(slots[i]===null)slots[i]=shuffled[pi++];}
+  return slots;
+}
+
+function generateBracket(){
+  const fs=seeded.filter(Boolean);
+  if(!fs.length||!pool.length)return;
+  const shuffled=[...pool];
+  for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+  gSlots=buildSlots(fs,shuffled); gSeeded=fs; bResults={};
+  saveToHash(); showShareBox(); showPage('bracket');
+}
+
+setInterval(()=>{try{localStorage.setItem('t32_setup',JSON.stringify({seeded,pool}));}catch(e){}},2000);
+
+function restoreSetup(){
+  try{
+    const s=JSON.parse(localStorage.getItem('t32_setup')||'null');
+    if(!s)return;
+    if(s.seeded)s.seeded.forEach((n,i)=>{if(i<SEED_COUNT&&n){seeded[i]=n;const inp=document.getElementById('seed-'+i);if(inp){inp.value=n;document.getElementById('seed-slot-'+i).classList.add('filled');}}});
+    if(s.pool){pool=s.pool;renderPool();}
+    updateSummary();
+  }catch(e){}
+}
+
+// ══════════════════════════════════════
+// HASH SHARING
+// ══════════════════════════════════════
+function saveToHash(){
+  try{
+    const b64=btoa(unescape(encodeURIComponent(JSON.stringify({s:gSlots,sd:gSeeded,r:bResults}))));
+    history.replaceState(null,'','#'+b64);
+    updateShareUrl();
+  }catch(e){}
+}
+function loadFromHash(){
+  try{
+    const hash=location.hash.slice(1); if(!hash)return false;
+    const data=JSON.parse(decodeURIComponent(escape(atob(hash))));
+    if(!data.s||!data.s.length)return false;
+    gSlots=data.s; gSeeded=data.sd||[]; bResults=data.r||{}; return true;
+  }catch(e){return false;}
+}
+function updateShareUrl(){const el=document.getElementById('shareUrl');if(el)el.value=location.href;}
+function showShareBox(){document.getElementById('shareBox').classList.add('open');updateShareUrl();}
+function copyShareUrl(){navigator.clipboard.writeText(location.href).then(()=>showToast('URL 복사됨!')).catch(()=>{try{document.getElementById('shareUrl').select();document.execCommand('copy');showToast('복사 완료!');}catch(e){}});}
+
+// ══════════════════════════════════════
+// QR
+// ══════════════════════════════════════
+function openQR(){
+  saveToHash();
+  const hashData=location.hash.slice(1);
+  document.getElementById('qr-url-text').textContent='#'+hashData;
+  document.getElementById('qr-code-box').textContent=hashData;
+  drawQRCode(hashData);
+  switchQRTab('hash');
+  document.getElementById('qr-modal').classList.add('open');
+}
+function closeQR(){document.getElementById('qr-modal').classList.remove('open');}
+document.getElementById('qr-modal').addEventListener('click',function(e){if(e.target===this)closeQR();});
+function switchQRTab(t){
+  document.getElementById('qtab-hash').classList.toggle('active',t==='hash');
+  document.getElementById('qtab-guide').classList.toggle('active',t==='guide');
+  document.getElementById('qpanel-hash').style.display=t==='hash'?'block':'none';
+  document.getElementById('qpanel-guide').style.display=t==='guide'?'block':'none';
+}
+function copyShareCode(){
+  const code=document.getElementById('qr-code-box').textContent;
+  navigator.clipboard.writeText(code).then(()=>showToast('코드 복사됨!')).catch(()=>{try{document.getElementById('qr-code-box').focus();document.execCommand('selectAll');document.execCommand('copy');showToast('복사됨!');}catch(e){}});
+}
+function drawQRCode(data){
+  const canvas=document.getElementById('qr-canvas'),ctx=canvas.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,180,180);
+  ctx.fillStyle='#555';ctx.font='11px monospace';ctx.textAlign='center';ctx.fillText('생성 중...',90,90);
+  if(!window.QRCode){
+    const sc=document.createElement('script');
+    sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    sc.onload=()=>renderQR(data);
+    sc.onerror=()=>{ctx.clearRect(0,0,180,180);ctx.fillStyle='#f4f4f4';ctx.fillRect(0,0,180,180);ctx.fillStyle='#888';ctx.fillText('오프라인 - 코드 복사 사용',90,90);};
+    document.head.appendChild(sc);
+  }else{renderQR(data);}
+}
+function renderQR(data){
+  const canvas=document.getElementById('qr-canvas');
+  canvas.width=180;canvas.height=180;
+  const tmp=document.createElement('div');tmp.style.display='none';document.body.appendChild(tmp);
+  try{
+    const qd=data.length>1800?data.slice(0,1800):data;
+    new QRCode(tmp,{text:qd,width:180,height:180,colorDark:'#111',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.L});
+    setTimeout(()=>{
+      const img=tmp.querySelector('img'),qc=tmp.querySelector('canvas'),ctx=canvas.getContext('2d');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,180,180);
+      if(qc)ctx.drawImage(qc,0,0,180,180);
+      else if(img){img.onload=()=>ctx.drawImage(img,0,0,180,180);}
+      tmp.remove();
+    },100);
+  }catch(e){tmp.remove();}
+}
+
+// ══════════════════════════════════════
+// MATCH TREE
+// ══════════════════════════════════════
+function buildMatches(){
+  matchMap={};matchOrder=[];let mid=1;
+  const mk=o=>{matchMap[o.id]=o;matchOrder.push(o.id);return o;};
+  const LR0=[],RR0=[];
+  for(let i=0;i<8;i++){
+    LR0.push(mk({id:mid++,round:0,side:'L',si:i,p1:gSlots[i*2]||null,p2:gSlots[i*2+1]||null,parentIds:null}));
+    RR0.push(mk({id:mid++,round:0,side:'R',si:i,p1:gSlots[16+i*2]||null,p2:gSlots[16+i*2+1]||null,parentIds:null}));
+  }
+  const nr=(prev,side,round)=>Array.from({length:prev.length/2},(_,i)=>mk({id:mid++,round,side,si:i,p1:null,p2:null,parentIds:[prev[i*2].id,prev[i*2+1].id]}));
+  const LR1=nr(LR0,'L',1),LR2=nr(LR1,'L',2),LR3=nr(LR2,'L',3);
+  const RR1=nr(RR0,'R',1),RR2=nr(RR1,'R',2),RR3=nr(RR2,'R',3);
+  mk({id:mid++,round:4,side:'C',si:0,p1:null,p2:null,parentIds:[LR3[0].id,RR3[0].id]});
+  resolveAll();
+}
+
+function resolveAll(){
+  matchOrder.forEach(id=>{
+    const m=matchMap[id];
+    if(!m.parentIds){
+      if(!bResults[m.id]){
+        if(m.p1&&!m.p2)bResults[m.id]=m.p1;
+        else if(m.p2&&!m.p1)bResults[m.id]=m.p2;
+      }
+      return;
+    }
+    const w1=bResults[m.parentIds[0]]||null,w2=bResults[m.parentIds[1]]||null;
+    m.p1=w1;m.p2=w2;
+    if(!bResults[m.id]){
+      if(w1&&!w2&&isByeChain(m.parentIds[1]))bResults[m.id]=w1;
+      else if(w2&&!w1&&isByeChain(m.parentIds[0]))bResults[m.id]=w2;
+    }else{
+      const stored=bResults[m.id];
+      if(w1&&w2&&stored!==w1&&stored!==w2)delete bResults[m.id];
+    }
+  });
+}
+function isByeChain(mid){
+  const m=matchMap[mid];if(!m)return false;
+  if(!m.parentIds)return !m.p1||!m.p2;
+  return isByeChain(m.parentIds[0])&&isByeChain(m.parentIds[1]);
+}
+function getNextOpponent(matchId){
+  const winner=bResults[matchId];if(!winner)return null;
+  for(const id of matchOrder){
+    const nm=matchMap[id];if(!nm.parentIds)continue;
+    if(nm.parentIds[0]===matchId||nm.parentIds[1]===matchId){
+      const otherPid=nm.parentIds[0]===matchId?nm.parentIds[1]:nm.parentIds[0];
+      return{nextMatch:nm,opponent:bResults[otherPid]||null,round:nm.round};
+    }
+  }
+  return null;
+}
+
+// ══════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════
+const RN=['32강','16강','8강','준결승','결승'];
+
+function renderAll(){
+  resolveAll();
+  updateProgress();
+  updateRoundTabs();
+  renderFocusView();
+  if(currentView==='full')renderFullView();
+}
+
+function updateProgress(){
+  const total=matchOrder.length,done=Object.keys(bResults).length;
+  document.getElementById('b-pbar').style.width=(total?Math.round(done/total*100):0)+'%';
+  document.getElementById('b-prog-text').textContent=`${done}/${total} 완료`;
+}
+
+function updateRoundTabs(){
+  const rm={0:[],1:[],2:[],3:[],4:[]};
+  matchOrder.forEach(id=>{const m=matchMap[id];rm[m.round].push(id);});
+  for(let r=0;r<=4;r++){
+    const tab=document.getElementById('rtab-'+r);if(!tab)continue;
+    const ids=rm[r],allDone=ids.length>0&&ids.every(id=>bResults[id]);
+    const doneCnt=ids.filter(id=>bResults[id]).length;
+    tab.classList.toggle('all-done',allDone);
+    let inner=RN[r];
+    if(allDone)inner+='<span class="done-mark">✓</span>';
+    else if(doneCnt>0)inner+=`<span class="done-mark">${doneCnt}/${ids.length}</span>`;
+    tab.innerHTML=inner;tab.onclick=()=>switchRound(r);
+  }
+}
+
+function renderFocusView(){
+  const byRound={0:[],1:[],2:[],3:[],4:[]};
+  matchOrder.forEach(id=>{const m=matchMap[id];byRound[m.round].push(m);});
+
+  // Sort helper: L first, then R, then C; within same side by si
+  const sortM=arr=>[
+    ...arr.filter(m=>m.side==='L').sort((a,b)=>a.si-b.si),
+    ...arr.filter(m=>m.side==='R').sort((a,b)=>a.si-b.si),
+    ...arr.filter(m=>m.side==='C')
+  ];
+
+  // 32강: interleave L and R for visual balance (L0,R0,L1,R1...)
+  {
+    const stage=document.getElementById('stage-0');stage.innerHTML='';
+    const L=byRound[0].filter(m=>m.side==='L').sort((a,b)=>a.si-b.si);
+    const R=byRound[0].filter(m=>m.side==='R').sort((a,b)=>a.si-b.si);
+    const matches=[];
+    for(let i=0;i<8;i++){if(L[i])matches.push(L[i]);if(R[i])matches.push(R[i]);}
+    matches.forEach(m=>{stage.appendChild(buildFmcWrap(m,false));});
+  }
+
+  // 16강: interleave L and R
+  {
+    const stage=document.getElementById('stage-1');stage.innerHTML='';
+    const L=byRound[1].filter(m=>m.side==='L').sort((a,b)=>a.si-b.si);
+    const R=byRound[1].filter(m=>m.side==='R').sort((a,b)=>a.si-b.si);
+    const matches=[];
+    for(let i=0;i<4;i++){if(L[i])matches.push(L[i]);if(R[i])matches.push(R[i]);}
+    matches.forEach(m=>{stage.appendChild(buildFmcWrap(m,false));});
+  }
+
+  // 8강: L then R
+  {
+    const stage=document.getElementById('stage-2');stage.innerHTML='';
+    sortM(byRound[2]).forEach(m=>{stage.appendChild(buildFmcWrap(m,false));});
+  }
+
+  // 준결승: L then R — mirrored layout handled by CSS
+  {
+    const stage=document.getElementById('stage-3');stage.innerHTML='';
+    sortM(byRound[3]).forEach(m=>{stage.appendChild(buildFmcWrap(m,false));});
+  }
+
+  // 결승
+  {
+    const stage=document.getElementById('stage-4');stage.innerHTML='';
+    byRound[4].forEach(m=>{stage.appendChild(buildFmcWrap(m,true));});
+  }
+}
+
+function buildFmcWrap(m,isFinal){
+  const wrap=document.createElement('div');
+  wrap.className='fmc-wrap';
+  const card=buildFocusCard(m,isFinal);
+  wrap.appendChild(card);
+  // Next match banner
+  const winner=bResults[m.id];
+  if(winner&&!isFinal){
+    const next=getNextOpponent(m.id);
+    const banner=document.createElement('div');
+    banner.className='nmb';
+    if(next&&next.opponent){
+      banner.innerHTML=`<span class="nmb-lbl">${RN[next.round]} 대결</span><span class="nmb-vs">${winner}</span> vs <span class="nmb-vs">${next.opponent}</span>`;
+    }else if(next){
+      banner.innerHTML=`<span class="nmb-lbl">${RN[next.round]} 진출</span>${winner} — 상대 대기 중`;
+    }else{
+      banner.innerHTML=`<span class="nmb-lbl">🏆 결승 진출</span><span class="nmb-vs">${winner}</span>`;
+    }
+    wrap.appendChild(banner);
+  }
+  return wrap;
+}
+
+function buildFocusCard(m,isFinal){
+  const winner=bResults[m.id],playable=!winner&&m.p1&&m.p2,waiting=!m.p1&&!m.p2;
+  let cls='fmc';
+  if(isFinal)cls+=' final-fmc';
+  if(playable)cls+=' playable';
+  else if(winner)cls+=' done';
+  else if(waiting)cls+=' waiting';
+  const card=document.createElement('div');
+  card.className=cls;
+  const sdot=winner?'done':(playable?'live':'');
+  const idx=matchOrder.map(id=>matchMap[id]).filter(x=>x.round===m.round).sort((a,b)=>a.id-b.id).indexOf(m)+1;
+  const rLabel=isFinal?'🏆 결승':`${RN[m.round]} ${idx}경기`;
+  card.innerHTML=`<div class="fmc-hdr"><span class="fmc-id">${rLabel}</span><div class="fmc-sdot ${sdot}"></div></div>${buildFSl(m,1,winner)}${buildFSl(m,2,winner)}`;
+  if(playable)card.addEventListener('click',()=>openModal(m));
+  return card;
+}
+
+function buildFSl(m,n,winner){
+  const pl=n===1?m.p1:m.p2;
+  const isWin=winner&&winner===pl,isLose=winner&&winner!==pl&&pl;
+  const isSeed=pl&&gSeeded.includes(pl),seedIdx=isSeed?gSeeded.indexOf(pl)+1:null;
+  const slotNum=pl?gSlots.indexOf(pl)+1:'?';
+  if(!pl)return`<div class="fsl fempty"><div class="fpill">—</div><span class="fname">대기 중</span></div>`;
+  let cls='fsl'+(isWin?' fwin':'')+(isLose?' flose':'')+(isSeed?' fseeded':'');
+  const pill=isSeed?'S'+seedIdx:slotNum;
+  return`<div class="${cls}"><div class="fpill">${pill}</div><span class="fname">${pl}</span>${isWin?'<span class="ftick">✓</span>':''}</div>`;
+}
+
+// ══════════════════════════════════════
+// FULL BRACKET VIEW
+// ══════════════════════════════════════
+function removeSvgOverlay(){if(svgOverlay){svgOverlay.remove();svgOverlay=null;}document.querySelectorAll('svg[data-bsvg]').forEach(e=>e.remove());}
+
+function renderFullView(){
+  removeSvgOverlay();
+  const fv=document.getElementById('full-view');fv.innerHTML='';
+  const addLbl=(text,col,gold)=>{const d=document.createElement('div');d.className='b-rlbl'+(gold?' gold':'')+(text?'':' spacer');d.style.cssText=`grid-column:${col};grid-row:1`;d.textContent=text;fv.appendChild(d);};
+  const RNF=['32강','16강','8강','준결승'];
+  for(let r=0;r<4;r++)addLbl(RNF[r],r+1);
+  addLbl('',5);addLbl('결승',6,true);addLbl('',7);
+  for(let r=3;r>=0;r--)addLbl(RNF[r],8+(3-r));
+  const makeCol=(cls,col)=>{const d=document.createElement('div');d.className=cls;d.style.cssText=`grid-column:${col};grid-row:2`;fv.appendChild(d);return d;};
+  const LC={},RC={};
+  for(let r=0;r<4;r++)LC[r]=makeCol('b-col',r+1);
+  makeCol('b-conn',5);
+  const finalCol=makeCol('b-col-final',6);
+  makeCol('b-conn',7);
+  for(let r=3;r>=0;r--)RC[r]=makeCol('b-col',8+(3-r));
+  matchOrder.forEach(id=>{
+    const m=matchMap[id],winner=bResults[m.id],playable=!winner&&m.p1&&m.p2,isFinal=m.side==='C';
+    const card=buildFullCard(m,winner,playable,isFinal);
+    if(isFinal){const tl=document.createElement('div');tl.className='b-trophy-lbl';tl.textContent='🏆 결승';finalCol.appendChild(tl);finalCol.appendChild(card);}
+    else if(m.side==='L')LC[m.round].appendChild(card);
+    else RC[m.round].appendChild(card);
+  });
+  requestAnimationFrame(()=>requestAnimationFrame(drawLines));
+}
+
+function buildFullCard(m,winner,playable,isFinal){
+  const card=document.createElement('div');
+  card.className='mc'+(isFinal?' final-mc':'')+(winner&&!isFinal?' done':'')+(playable?' playable':'');
+  card.dataset.mid=m.id;
+  const sdot=winner?'done':(playable?'live':'');
+  card.innerHTML=`<div class="mc-hdr"><span class="mc-id">${isFinal?'결승':RN[m.round]+' #'+m.id}</span><div class="sdot ${sdot}"></div></div>${buildFullSl(m,1,winner)}${buildFullSl(m,2,winner)}`;
+  if(playable)card.addEventListener('click',()=>openModal(m));
+  return card;
+}
+function buildFullSl(m,n,winner){
+  const pl=n===1?m.p1:m.p2;
+  const isWin=winner&&winner===pl,isLose=winner&&winner!==pl&&pl;
+  const isSeed=pl&&gSeeded.includes(pl),seedIdx=isSeed?gSeeded.indexOf(pl)+1:null;
+  const slotNum=pl?gSlots.indexOf(pl)+1:'?';
+  if(!pl)return`<div class="sl empty"><span class="pill">—</span><span class="pname">대기 중</span></div>`;
+  let cls='sl'+(isWin?' win':'')+(isLose?' lose':'')+(isSeed?' seeded':'');
+  const pill=isSeed?'S'+seedIdx:slotNum;
+  return`<div class="${cls}"><div class="pill">${pill}</div><span class="pname">${pl}</span>${isWin?'<span class="wtick">✓</span>':''}</div>`;
+}
+
+function drawLines(){
+  removeSvgOverlay();
+  if(!document.getElementById('page-bracket').classList.contains('active'))return;
+  if(currentView!=='full')return;
+  const fv=document.getElementById('full-view');if(!fv)return;
+  const ar=fv.getBoundingClientRect();if(ar.width===0)return;
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('data-bsvg','1');
+  svg.style.cssText=`position:fixed;top:${ar.top}px;left:${ar.left}px;width:${ar.width}px;height:${ar.height}px;pointer-events:none;z-index:10;overflow:visible;`;
+  document.body.appendChild(svg);svgOverlay=svg;
+  const rel=el=>{const r=el.getBoundingClientRect();return{left:r.left-ar.left,right:r.right-ar.left,cy:(r.top+r.bottom)/2-ar.top};};
+  const mkP=(d,stroke,sw)=>{const el=document.createElementNS('http://www.w3.org/2000/svg','path');el.setAttribute('d',d);el.setAttribute('fill','none');el.setAttribute('stroke',stroke);el.setAttribute('stroke-width',String(sw));el.setAttribute('stroke-linecap','round');el.setAttribute('stroke-linejoin','round');svg.appendChild(el);};
+  matchOrder.forEach(id=>{
+    const m=matchMap[id];if(!m.parentIds)return;
+    const[pid1,pid2]=m.parentIds;
+    const c1=document.querySelector(`#full-view .mc[data-mid="${pid1}"]`);
+    const c2=document.querySelector(`#full-view .mc[data-mid="${pid2}"]`);
+    const cM=document.querySelector(`#full-view .mc[data-mid="${m.id}"]`);
+    if(!c1||!c2||!cM)return;
+    const r1=rel(c1),r2=rel(c2),rM=rel(cM);
+    const wonAny=bResults[pid1]||bResults[pid2];
+    const lc=wonAny?'#1a6030':'#111',lw=wonAny?2.2:1.6;
+    if(m.side==='L'){const mx=r1.right+(rM.left-r1.right)*0.5;mkP(`M${r1.right} ${r1.cy} H${mx} V${r2.cy} M${r2.right} ${r2.cy} H${mx} M${mx} ${(r1.cy+r2.cy)/2} H${rM.left}`,lc,lw);}
+    else if(m.side==='R'){const mx=r1.left-(r1.left-rM.right)*0.5;mkP(`M${r1.left} ${r1.cy} H${mx} V${r2.cy} M${r2.left} ${r2.cy} H${mx} M${mx} ${(r1.cy+r2.cy)/2} H${rM.right}`,lc,lw);}
+    else{mkP(`M${r1.right} ${r1.cy} H${rM.left}`,'#c8900a',2.8);mkP(`M${r2.left} ${r2.cy} H${rM.right}`,'#c8900a',2.8);}
+  });
+}
+window.addEventListener('resize',()=>{if(!document.getElementById('page-bracket').classList.contains('active'))return;if(currentView==='full')requestAnimationFrame(drawLines);});
+
+// ══════════════════════════════════════
+// CONFIRM MODAL
+// ══════════════════════════════════════
+let pendingMatch=null;
+function openModal(m){
+  if(IS_VIEWER)return;
+  pendingMatch=m;
+  const idx=matchOrder.map(id=>matchMap[id]).filter(x=>x.round===m.round).sort((a,b)=>a.id-b.id).indexOf(m)+1;
+  document.getElementById('cm-match-label').textContent=`${RN[m.round]} ${idx}경기`;
+  document.getElementById('cm-btn1').textContent=m.p1;
+  document.getElementById('cm-btn2').textContent=m.p2;
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('confirm-modal').classList.remove('open');pendingMatch=null;}
+function confirmWinner(n){if(!pendingMatch)return;const player=n===0?pendingMatch.p1:pendingMatch.p2;setW(pendingMatch.id,player);closeModal();}
+document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// ══════════════════════════════════════
+// ACTIONS
+// ══════════════════════════════════════
+function setW(matchId,player){
+  bResults[matchId]=player;saveToHash();buildMatches();renderAll();showToast('✓ '+player+' 승리');
+  const nr=findNextActiveRound();if(nr>=0)switchRound(nr);
+  const fm=matchOrder.map(id=>matchMap[id]).find(m=>m.side==='C');
+  if(fm&&bResults[fm.id])setTimeout(()=>showChampion(bResults[fm.id]),350);
+}
+function findNextActiveRound(){
+  for(let r=0;r<=4;r++){
+    const ids=matchOrder.filter(id=>matchMap[id].round===r);
+    if(ids.some(id=>{const m=matchMap[id];return !bResults[id]&&m.p1&&m.p2;}))return r;
+  }
+  return -1;
+}
+function resetResults(){
+  if(!confirm('모든 결과를 초기화할까요?'))return;
+  bResults={};saveToHash();buildMatches();renderAll();switchRound(0);showToast('초기화 완료');
+}
+function showChampion(name){
+  if(document.getElementById('champ-ov'))return;
+  const ov=document.createElement('div');ov.className='champ-ov';ov.id='champ-ov';
+  ov.innerHTML=`<div class="champ-box"><div class="champ-eyebrow">스피드 큐브 챔피언십 · 초등 1부</div><div class="champ-big">🏆</div><div class="champ-name">${name}</div><div class="champ-sub">토너먼트 최종 우승자</div><button class="champ-btn" onclick="document.getElementById('champ-ov').remove()">확인</button></div>`;
+  document.body.appendChild(ov);doConfetti();
+}
+function doConfetti(){
+  const cols=['#e8b84b','#f5ca60','#2e8a50','#4a90d9','#e05050'];
+  for(let i=0;i<80;i++){const el=document.createElement('div');el.className='cf';const s=5+Math.random()*8;el.style.cssText=`left:${Math.random()*100}vw;top:-10px;background:${cols[Math.floor(Math.random()*cols.length)]};width:${s}px;height:${s}px;animation-duration:${1.5+Math.random()*2.5}s;animation-delay:${Math.random()*0.9}s;`;document.body.appendChild(el);setTimeout(()=>el.remove(),4500);}
+}
+function showToast(msg){document.querySelectorAll('.toast').forEach(e=>e.remove());const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
+
+// ══════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════
+initSeedGrid();updateSummary();
+if(loadFromHash()){
+  showShareBox();
+  if(IS_VIEWER){document.body.classList.add('viewer-mode');window.openModal=()=>{};}
+  showPage('bracket');
+}else{restoreSetup();}
+</script>
+</body>
+</html>
